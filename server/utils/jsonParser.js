@@ -8,8 +8,14 @@
  * @returns {object} Parsed JSON object
  */
 function parseCleanJSON(str, schema = null) {
-  if (!str || typeof str !== "string") {
-    throw new SyntaxError("Input is not a valid string");
+  if (str === undefined || str === null) {
+    throw new SyntaxError("Input is null or undefined");
+  }
+  if (typeof str !== "string") {
+    throw new SyntaxError(`Input is not a string (type: ${typeof str})`);
+  }
+  if (str.trim() === "") {
+    throw new SyntaxError("Input is an empty string");
   }
 
   // 1. Remove thinking blocks (including unclosed ones)

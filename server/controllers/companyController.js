@@ -67,7 +67,14 @@ Return exactly in this format:
             careerPage: ""
         };
 
-        const companyInfo = parseCleanJSON(textResponse, companySchema);
+        let companyInfo;
+        try {
+            companyInfo = parseCleanJSON(textResponse, companySchema);
+        } catch (err) {
+            console.error("Failed to parse company details JSON. Error:", err.message);
+            console.error("Raw text response was:", JSON.stringify(textResponse));
+            throw err;
+        }
 
         // Add logo automatically using Clearbit
         companyInfo.logo = `https://logo.clearbit.com/${company.toLowerCase()}.com`;
