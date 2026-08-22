@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/google";
+import { API_URL } from "../config/api";
+
+const API = `${API_URL}/google`;
 
 export const connectGoogle = async () => {
   const token = localStorage.getItem("token");

@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_URL } from "../../config/api";
 import { motion } from "framer-motion";
 import {
   FaBriefcase,
@@ -29,7 +30,7 @@ function StatsCards() {
       const token = localStorage.getItem("token");
 
       const res = await axios.get(
-        "http://localhost:5000/api/jobs/stats",
+        `${API_URL}/jobs/stats`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

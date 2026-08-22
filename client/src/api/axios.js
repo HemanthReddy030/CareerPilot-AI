@@ -1,27 +1,8 @@
 import axios from "axios";
+import { API_URL } from "../config/api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
+const api = axios.create({
+  baseURL: API_URL,
 });
 
-// Response interceptor to handle invalid/expired tokens automatically
-API.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      
-      const path = window.location.pathname;
-      if (path !== "/login" && path !== "/register" && path !== "/") {
-        window.location.href = "/login";
-      }
-    }
-    return Promise.reject(error);
-  }
-);
-
-export default API;
+export default api;

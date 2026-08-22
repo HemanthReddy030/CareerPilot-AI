@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/analytics";
+import { API_URL } from "../config/api";
+
+const API = `${API_URL}/analytics`;
 
 export const getAnalytics = async () => {
     const token = localStorage.getItem("token");

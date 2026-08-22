@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API = "http://localhost:5000/api/gmail";
+import { API_URL } from "../config/api";
+
+const API = `${API_URL}/gmail`;
 
 export const getJobEmails = async () => {
   const token = localStorage.getItem("token");

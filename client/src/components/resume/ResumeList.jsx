@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { API_BASE_URL } from "../../config/api";
 import {
   FileText,
   Eye,
@@ -113,10 +114,8 @@ function ResumeList() {
       className="space-y-4"
     >
       {resumes.map((resume) => {
-        const fileUrl = `http://localhost:5000/${resume.fileUrl.replace(
-          /\\/g,
-          "/"
-        )}`;
+        const fileUrl =
+          `${API_BASE_URL}/${resume.fileUrl.replace(/^\/+/, "")}`;
 
         return (
           <motion.div
