@@ -11,3 +11,8 @@ export const connectGoogle = async () => {
   });
   return data;
 };
+
+export const getGoogleAuthUrl = async () => {
+  const { data } = await axios.get(`${API}/auth`);
+  return data;
+};

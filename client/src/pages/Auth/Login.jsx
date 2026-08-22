@@ -22,6 +22,7 @@ import {
   resendVerification,
   socialLoginUser,
 } from "../../services/authService";
+import { getGoogleAuthUrl } from "../../services/googleService";
 
 function Login() {
   const navigate = useNavigate();
@@ -86,6 +87,29 @@ function Login() {
     }
   }, []);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+    const userStr = params.get("user");
+    const error = params.get("error");
+    
+    if (token && userStr) {
+      try {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", userStr);
+        setSuccessMsg("Login Successful! Redirecting...");
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1200);
+      } catch (err) {
+        console.error("Failed to parse Google login redirect data:", err);
+        setErrorMsg("Failed to authenticate with Google.");
+      }
+    } else if (error) {
+      setErrorMsg(decodeURIComponent(error));
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -135,6 +159,23 @@ function Login() {
         setShowResend(false);
       }
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      setLoading(true);
+      setErrorMsg("");
+      const data = await getGoogleAuthUrl();
+      if (data && data.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error("Invalid Auth URL response");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Failed to initiate Google Login.");
       setLoading(false);
     }
   };
@@ -496,7 +537,7 @@ function Login() {
                 <div className="mt-5 grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => handleSocialLogin("google@example.com", "Google User")}
+                    onClick={handleGoogleLogin}
                     className="flex items-center justify-center gap-2.5 rounded-[20px] border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 hover:border-slate-300"
                   >
                     <svg className="h-4 w-4" viewBox="0 0 24 24" width="24" height="24" xmlns="http://www.w3.org/2000/svg">
