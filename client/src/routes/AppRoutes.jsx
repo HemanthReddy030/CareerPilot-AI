@@ -1,4 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
 
 import Home from "../pages/Home/Home";
 import Login from "../pages/Auth/Login";
@@ -14,30 +18,68 @@ import Gmail from "../pages/Gmail/Gmail";
 import CompanyDetails from "../pages/Company/CompanyDetails";
 import VerifyEmail from "../pages/Auth/VerifyEmail";
 
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import TermsOfService from "../pages/TermsOfService";
+
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
 
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={<Home />}
+        />
 
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={<Login />}
+        />
 
-        <Route path="/register" element={<Register />} />
+        <Route
+          path="/register"
+          element={<Register />}
+        />
 
-        <Route path="/verify-email" element={<VerifyEmail />} />
-        <Route path="/verify-email/:token" element={<VerifyEmail />} />
+        <Route
+          path="/verify-email"
+          element={<VerifyEmail />}
+        />
 
+        <Route
+          path="/verify-email/:token"
+          element={<VerifyEmail />}
+        />
 
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/privacy-policy"
+          element={<PrivacyPolicy />}
+        />
 
-        <Route path="/resume" element={<Resume />} />
+        <Route
+          path="/terms"
+          element={<TermsOfService />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
+
+        <Route
+          path="/resume"
+          element={<Resume />}
+        />
+
         <Route
           path="/company/:company"
           element={<CompanyDetails />}
         />
 
-        <Route path="/jobs" element={<Jobs />} />
+        <Route
+          path="/jobs"
+          element={<Jobs />}
+        />
 
         <Route
           path="/ai-interview"
