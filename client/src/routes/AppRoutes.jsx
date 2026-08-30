@@ -25,7 +25,9 @@ function AppRoutes() {
 
         <Route path="/register" element={<Register />} />
 
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/verify-email/:token" element={<VerifyEmail />} />
+
 
         <Route path="/dashboard" element={<Dashboard />} />
 
