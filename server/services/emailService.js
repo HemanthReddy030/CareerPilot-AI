@@ -1,15 +1,14 @@
-const { Resend } = require("resend");
-
-const resend = process.env.RESEND_API_KEY
-  ? new Resend(process.env.RESEND_API_KEY)
-  : null;
-
 const CLIENT_URL =
   process.env.CLIENT_URL || "http://localhost:5173";
 
-const FROM_EMAIL =
-  process.env.RESEND_FROM_EMAIL ||
-  "onboarding@resend.dev";
+const BREVO_API_KEY =
+  process.env.BREVO_API_KEY || "";
+
+const BREVO_SENDER_EMAIL =
+  process.env.BREVO_SENDER_EMAIL || "";
+
+const BREVO_SENDER_NAME =
+  process.env.BREVO_SENDER_NAME || "CareerPilot AI";
 
 const escapeHtml = (value = "") =>
   String(value)
@@ -24,9 +23,13 @@ const sendVerificationEmail = async (
   fullName,
   verificationToken
 ) => {
-  if (!resend) {
+  if (!BREVO_API_KEY) {
+    throw new Error("BREVO_API_KEY is not configured.");
+  }
+
+  if (!BREVO_SENDER_EMAIL) {
     throw new Error(
-      "RESEND_API_KEY is not configured."
+      "BREVO_SENDER_EMAIL is not configured."
     );
   }
 
@@ -37,46 +40,53 @@ const sendVerificationEmail = async (
       verificationToken
     )}`;
 
-  const safeName = escapeHtml(
-    fullName || "there"
-  );
+  const safeName = escapeHtml(fullName || "there");
 
-  try {
-    const { data, error } =
-      await resend.emails.send({
-        from: `CareerPilot AI <${FROM_EMAIL}>`,
-        to: [email],
-        subject:
-          "Verify your CareerPilot AI account",
-        text: `
+  const payload = {
+    sender: {
+      name: BREVO_SENDER_NAME,
+      email: BREVO_SENDER_EMAIL,
+    },
+
+    to: [
+      {
+        email,
+        name: fullName || "CareerPilot User",
+      },
+    ],
+
+    subject: "Verify your CareerPilot AI account",
+
+    textContent: `
 Hello ${fullName || "there"},
 
 Welcome to CareerPilot AI.
 
-Please verify your email address by opening the link below:
+Please verify your email address using the link below:
 
 ${verificationUrl}
 
-This verification link will expire after a limited period.
-
-If you did not create a CareerPilot AI account, you can ignore this email.
+If you did not create this account, you can ignore this email.
 
 CareerPilot AI
-        `.trim(),
+    `.trim(),
 
-        html: `
+    htmlContent: `
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
 </head>
 
 <body
   style="
     margin: 0;
     padding: 0;
-    background: #f5f5f7;
+    background: #f5f7fb;
     font-family: Arial, Helvetica, sans-serif;
     color: #111827;
   "
@@ -101,6 +111,7 @@ CareerPilot AI
             background: #ffffff;
             border-radius: 16px;
             overflow: hidden;
+            border: 1px solid #e5e7eb;
           "
         >
 
@@ -110,7 +121,7 @@ CareerPilot AI
                 padding: 32px;
                 text-align: center;
                 background: #111827;
-                color: white;
+                color: #ffffff;
               "
             >
               <h1
@@ -177,7 +188,7 @@ CareerPilot AI
                   style="
                     display: inline-block;
                     padding: 14px 28px;
-                    background: #111827;
+                    background: #2563eb;
                     color: #ffffff;
                     text-decoration: none;
                     border-radius: 8px;
@@ -241,18 +252,36 @@ CareerPilot AI
   </table>
 </body>
 </html>
-        `,
-      });
+    `,
+  };
 
-    if (error) {
+  try {
+    const response = await fetch(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        method: "POST",
+
+        headers: {
+          accept: "application/json",
+          "api-key": BREVO_API_KEY,
+          "content-type": "application/json",
+        },
+
+        body: JSON.stringify(payload),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
       console.error(
-        `[EMAIL] Resend failed for ${email}:`,
-        error
+        `[EMAIL] Brevo failed for ${email}:`,
+        data
       );
 
       throw new Error(
-        error.message ||
-        "Failed to send verification email."
+        data?.message ||
+        `Brevo returned status ${response.status}`
       );
     }
 
@@ -272,16 +301,16 @@ CareerPilot AI
 };
 
 const verifyEmailTransport = async () => {
-  if (!resend) {
+  if (!BREVO_API_KEY) {
     console.warn(
-      "[EMAIL] RESEND_API_KEY is not configured."
+      "[EMAIL] BREVO_API_KEY is not configured."
     );
 
     return false;
   }
 
   console.log(
-    "[EMAIL] Resend API configured successfully."
+    "[EMAIL] Brevo API configured successfully."
   );
 
   return true;
